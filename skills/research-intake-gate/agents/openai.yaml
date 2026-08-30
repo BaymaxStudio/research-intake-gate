@@ -1,0 +1,6 @@
+interface:
+  display_name: "Research Intake Gate"
+  short_description: "Audit staged AI research before formal data import"
+  default_prompt: "Use $research-intake-gate to stage and review this multi-source research before any formal import."
+policy:
+  allow_implicit_invocation: true
