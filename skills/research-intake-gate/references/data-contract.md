@@ -29,6 +29,7 @@ Target IDs, source IDs, claim IDs, and batch IDs must be unique within their sco
       "url": "https://example.invalid/notice",
       "title": "Official notice",
       "sourceType": "official_page",
+      "supportsFields": ["application_window"],
       "publishedAt": "2026-08-20",
       "accessedAt": "2026-08-30",
       "applicablePeriod": "2027",
@@ -56,7 +57,7 @@ Target IDs, source IDs, claim IDs, and batch IDs must be unique within their sco
 }
 ```
 
-Allowed source types are `official_page`, `official_pdf`, `search_snippet`, `third_party`, and `other`. Allowed access states are `accessed_body`, `blocked`, `not_found`, and `snippet_only`. Claim status is normally `current` or `reference`; the validator applies the strict period rule only to `current`.
+Allowed source types are `official_page`, `official_pdf`, `search_snippet`, `third_party`, and `other`. Allowed access states are `accessed_body`, `blocked`, `not_found`, and `snippet_only`. `supportsFields` states which project fields the source body is suitable to prove; a contact page scoped to `contact` cannot support `program_status`. Claim status is `current` or `reference`; the validator applies the strict period rule only to `current`.
 
 ## Review decisions
 

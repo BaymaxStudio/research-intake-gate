@@ -181,6 +181,11 @@ def validate_project_and_batch(project: dict[str, Any], batch: dict[str, Any]) -
             issues.append(Issue("error", "SOURCE_TYPE", "Unknown sourceType", source_id=source_id))
         if source.get("accessStatus") not in ACCESS_STATES:
             issues.append(Issue("error", "SOURCE_ACCESS", "Unknown accessStatus", source_id=source_id))
+        supports_fields = source.get("supportsFields")
+        if not isinstance(supports_fields, list) or any(not isinstance(field, str) for field in supports_fields):
+            issues.append(Issue("error", "SOURCE_FIELDS", "supportsFields must be an array of field names", source_id=source_id))
+        elif any(field not in allowed_fields for field in supports_fields):
+            issues.append(Issue("error", "SOURCE_FIELDS", "supportsFields contains a field outside project.allowedFields", source_id=source_id))
         if not is_iso_date(source.get("accessedAt")):
             issues.append(Issue("error", "SOURCE_ACCESSED_DATE", "accessedAt must be an ISO date", source_id=source_id))
         if source.get("publishedAt") is not None and not is_iso_date(source.get("publishedAt")):
@@ -225,11 +230,14 @@ def validate_project_and_batch(project: dict[str, Any], batch: dict[str, Any]) -
                 issues.append(Issue("error", "EVIDENCE_SOURCE", f"Unknown source id: {source_id}", claim_id=claim_id))
                 continue
             source = source_map[source_id]
+            if relation == "supports" and claim.get("field") not in source.get("supportsFields", []):
+                issues.append(Issue("error", "SOURCE_FIELD_MISMATCH", "Source is not scoped to support this claim field", claim_id=claim_id, source_id=source_id))
             if (
                 relation == "supports"
                 and source.get("accessStatus") == "accessed_body"
                 and source.get("sourceType") != "search_snippet"
                 and source.get("applicablePeriod") in {current_period, "evergreen"}
+                and claim.get("field") in source.get("supportsFields", [])
             ):
                 valid_current_support = True
             if relation == "supports" and source.get("accessStatus") == "blocked":
@@ -335,7 +343,14 @@ def review_model(project: dict[str, Any], batch: dict[str, Any], issues: Sequenc
             "warningCount": sum(issue.level == "warning" for issue in issues),
         },
         "claims": claims,
-        "gaps": batch.get("gaps", []),
+        "gaps": [
+            {
+                **gap,
+                "sources": [source_map[source_id] for source_id in gap.get("sourceIds", []) if source_id in source_map],
+            }
+            for gap in batch.get("gaps", [])
+            if isinstance(gap, dict)
+        ],
         "globalIssues": [issue_dict(issue) for issue in issues if issue.claim_id is None],
     }
 
@@ -344,12 +359,27 @@ def markdown_review(model: dict[str, Any]) -> str:
     lines = [
         f"# Review: {model['batchId']}",
         "",
-        f"Project: {model.get('projectName')}  ",
-        f"Current period: {model.get('currentPeriod')}  ",
-        f"Claims: {model['summary']['claimCount']} | Sources: {model['summary']['sourceCount']} | "
-        f"Errors: {model['summary']['errorCount']} | Warnings: {model['summary']['warningCount']}",
+        f"- Project: {model.get('projectName')}",
+        f"- Current period: {model.get('currentPeriod')}",
+        f"- Claims: {model['summary']['claimCount']}",
+        f"- Sources: {model['summary']['sourceCount']}",
+        f"- Errors: {model['summary']['errorCount']}",
+        f"- Warnings: {model['summary']['warningCount']}",
         "",
     ]
+    lines.extend(["## Global checks", ""])
+    if model.get("globalIssues"):
+        for issue in model["globalIssues"]:
+            refs = "".join(
+                value for value in (
+                    f" claim={issue.get('claim_id')}" if issue.get("claim_id") else "",
+                    f" source={issue.get('source_id')}" if issue.get("source_id") else "",
+                )
+            )
+            lines.append(f"- {issue['level'].upper()} `{issue['code']}`{refs}: {issue['message']}")
+    else:
+        lines.append("- No global issues")
+    lines.append("")
     for claim in model["claims"]:
         lines.extend([
             f"## {claim.get('id')}: {claim.get('targetName')} / {claim.get('field')}",
@@ -360,17 +390,44 @@ def markdown_review(model: dict[str, Any]) -> str:
         for evidence in claim.get("evidence", []):
             source = evidence.get("source") or {}
             lines.extend([
-                f"- Evidence `{evidence.get('relation')}` from `{evidence.get('sourceId')}` "
-                f"({source.get('accessStatus', 'unknown')}, {source.get('applicablePeriod', 'unknown')}): "
-                f"{evidence.get('excerpt', '')}",
+                f"- Evidence relation: `{evidence.get('relation')}`",
+                f"  - Source ID: `{evidence.get('sourceId')}`",
+                f"  - Source title: {source.get('title')}",
+                f"  - URL: `{source.get('url')}`",
+                f"  - Source type: `{source.get('sourceType')}`",
+                f"  - Access status: `{source.get('accessStatus')}`",
+                f"  - Applicable period: `{source.get('applicablePeriod')}`",
+                f"  - Supports fields: `{json.dumps(source.get('supportsFields'), ensure_ascii=False)}`",
+                f"  - Published: `{source.get('publishedAt')}`",
+                f"  - Accessed: `{source.get('accessedAt')}`",
+                f"  - Locator: {evidence.get('locator')}",
+                f"  - Excerpt: {evidence.get('excerpt', '')}",
             ])
+        lines.append("- Checks:")
         for issue in claim.get("issues", []):
-            lines.append(f"- {issue['level'].upper()} `{issue['code']}`: {issue['message']}")
+            lines.append(f"  - {issue['level'].upper()} `{issue['code']}`: {issue['message']}")
+        if not claim.get("issues"):
+            lines.append("  - No claim-specific issues")
         lines.append("")
     if model.get("gaps"):
         lines.extend(["## Gaps", ""])
         for gap in model["gaps"]:
-            lines.append(f"- `{gap.get('type')}` {gap.get('targetId', '')}: {gap.get('note', '')}")
+            lines.extend([
+                f"### {gap.get('id')}",
+                "",
+                f"- Target: `{gap.get('targetId')}`",
+                f"- Field: `{gap.get('field')}`",
+                f"- Type: `{gap.get('type')}`",
+                f"- Note: {gap.get('note', '')}",
+                f"- Source IDs: `{json.dumps(gap.get('sourceIds', []), ensure_ascii=False)}`",
+            ])
+            for source in gap.get("sources", []):
+                lines.append(
+                    f"  - `{source.get('id')}`: {source.get('title')} | {source.get('sourceType')} | "
+                    f"{source.get('accessStatus')} | period {source.get('applicablePeriod')} | "
+                    f"supports {json.dumps(source.get('supportsFields'), ensure_ascii=False)} | "
+                    f"published {source.get('publishedAt')} | accessed {source.get('accessedAt')} | `{source.get('url')}`"
+                )
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
@@ -381,18 +438,26 @@ def html_review(model: dict[str, Any]) -> str:
 
     cards = []
     for claim in model["claims"]:
-        evidence_html = "".join(
-            "<li><span class='relation'>"
-            + esc(item.get("relation"))
-            + "</span> <code>"
-            + esc(item.get("sourceId"))
-            + "</code> · "
-            + esc((item.get("source") or {}).get("accessStatus", "unknown"))
-            + " · “"
-            + esc(item.get("excerpt", ""))
-            + "”</li>"
-            for item in claim.get("evidence", [])
-        )
+        evidence_html = ""
+        for item in claim.get("evidence", []):
+            source = item.get("source") or {}
+            evidence_html += (
+                "<li class='evidence'><p><span class='relation'>"
+                + esc(item.get("relation"))
+                + "</span> <code>"
+                + esc(item.get("sourceId"))
+                + "</code></p><dl>"
+                + f"<dt>Title</dt><dd>{esc(source.get('title'))}</dd>"
+                + f"<dt>URL</dt><dd><code>{esc(source.get('url'))}</code></dd>"
+                + f"<dt>Type</dt><dd>{esc(source.get('sourceType'))}</dd>"
+                + f"<dt>Access</dt><dd>{esc(source.get('accessStatus'))}</dd>"
+                + f"<dt>Period</dt><dd>{esc(source.get('applicablePeriod'))}</dd>"
+                + f"<dt>Supports</dt><dd>{esc(json.dumps(source.get('supportsFields'), ensure_ascii=False))}</dd>"
+                + f"<dt>Published</dt><dd>{esc(source.get('publishedAt'))}</dd>"
+                + f"<dt>Accessed</dt><dd>{esc(source.get('accessedAt'))}</dd>"
+                + f"<dt>Locator</dt><dd>{esc(item.get('locator'))}</dd>"
+                + f"<dt>Excerpt</dt><dd>“{esc(item.get('excerpt', ''))}”</dd></dl></li>"
+            )
         issue_html = "".join(
             f"<li class='{esc(item['level'])}'>{esc(item['level'].upper())} <code>{esc(item['code'])}</code>: {esc(item['message'])}</li>"
             for item in claim.get("issues", [])
@@ -404,7 +469,26 @@ def html_review(model: dict[str, Any]) -> str:
             f"<article class='claim' data-search='{esc(search_text.lower())}' tabindex='0'>"
             f"<header><span>{esc(claim.get('targetName'))}</span><code>{esc(claim.get('field'))}</code></header>"
             f"<h2>{esc(claim.get('id'))}</h2><pre>{esc(json.dumps(claim.get('value'), ensure_ascii=False, indent=2))}</pre>"
-            f"<h3>Evidence</h3><ul>{evidence_html}</ul><h3>Checks</h3><ul>{issue_html}</ul></article>"
+            f"<h3>Evidence</h3><ul class='plain'>{evidence_html}</ul><h3>Checks</h3><ul>{issue_html}</ul></article>"
+        )
+    global_issue_html = "".join(
+        f"<li class='{esc(item['level'])}'>{esc(item['level'].upper())} <code>{esc(item['code'])}</code>: {esc(item['message'])}</li>"
+        for item in model.get("globalIssues", [])
+    ) or "<li class='pass'>No global issues</li>"
+    gap_cards = []
+    for gap in model.get("gaps", []):
+        gap_sources = "".join(
+            f"<li><code>{esc(source.get('id'))}</code> · {esc(source.get('title'))} · {esc(source.get('sourceType'))} · "
+            f"{esc(source.get('accessStatus'))} · period {esc(source.get('applicablePeriod'))} · "
+            f"supports {esc(json.dumps(source.get('supportsFields'), ensure_ascii=False))} · "
+            f"published {esc(source.get('publishedAt'))} · accessed {esc(source.get('accessedAt'))} · "
+            f"<code>{esc(source.get('url'))}</code></li>"
+            for source in gap.get("sources", [])
+        ) or "<li>No linked source details</li>"
+        gap_cards.append(
+            f"<article class='gap'><header><span>{esc(gap.get('targetId'))}</span><code>{esc(gap.get('field'))}</code></header>"
+            f"<h3>{esc(gap.get('id'))}</h3><p><strong>{esc(gap.get('type'))}</strong> · {esc(gap.get('note'))}</p>"
+            f"<ul>{gap_sources}</ul></article>"
         )
     summary = model["summary"]
     model_json = json.dumps(model, ensure_ascii=False).replace("</", "<\\/")
@@ -413,20 +497,22 @@ def html_review(model: dict[str, Any]) -> str:
 <title>Research review · {esc(model['batchId'])}</title>
 <style>
 :root{{--paper:#f5f1e8;--ink:#17201b;--muted:#657169;--line:#cbd1c8;--accent:#0b6b50;--warn:#9a5b00;--error:#a12a2a}}
-*{{box-sizing:border-box}}body{{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 ui-sans-serif,system-ui,sans-serif}}
+*{{box-sizing:border-box}}body{{margin:0;overflow-x:hidden;background:var(--paper);color:var(--ink);font:16px/1.55 ui-sans-serif,system-ui,sans-serif}}
 main{{max-width:1080px;margin:auto;padding:32px 20px 64px}}.mast{{border-bottom:2px solid var(--ink);padding-bottom:20px}}
 h1{{font:700 clamp(2rem,6vw,4.5rem)/.95 ui-serif,Georgia,serif;margin:.2em 0}}.meta{{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted)}}
 label{{display:block;margin:24px 0 12px;font-weight:700}}input{{width:100%;padding:12px;border:1px solid var(--line);background:#fff;font:inherit}}
-.grid{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}}.claim{{background:#fff;border:1px solid var(--line);padding:18px;box-shadow:4px 4px 0 #dce1d9}}
+.grid{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}}.claim,.gap,.checks{{background:#fff;border:1px solid var(--line);padding:18px;box-shadow:4px 4px 0 #dce1d9}}
 .claim:focus{{outline:3px solid var(--accent);outline-offset:2px}}header{{display:flex;justify-content:space-between;gap:12px;color:var(--muted)}}
 h2{{font:700 1.45rem ui-serif,Georgia,serif}}h3{{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;margin-top:20px}}pre{{white-space:pre-wrap;background:#edf0eb;padding:12px}}
-li{{margin:.55em 0}}.relation{{color:var(--accent);font-weight:700}}.warning{{color:var(--warn)}}.error{{color:var(--error)}}.pass{{color:var(--accent)}}
+li{{margin:.55em 0}}.plain{{list-style:none;padding:0}}.evidence{{border-top:1px solid var(--line);padding-top:8px}}dl{{display:grid;grid-template-columns:90px 1fr;gap:4px 10px}}dt{{color:var(--muted)}}dd{{margin:0;overflow-wrap:anywhere}}.relation{{color:var(--accent);font-weight:700}}.warning{{color:var(--warn)}}.error{{color:var(--error)}}.pass{{color:var(--accent)}}
 .empty{{display:none;padding:24px;border:1px dashed var(--line)}}@media(max-width:680px){{main{{padding:20px 14px 48px}}.grid{{grid-template-columns:1fr}}header{{display:block}}}}
 </style></head><body><main><section class="mast"><p>LOCAL REVIEW DOSSIER</p><h1>{esc(model['batchId'])}</h1>
 <div class="meta"><span>{esc(model.get('projectName'))}</span><span>Period {esc(model.get('currentPeriod'))}</span>
 <span>{summary['claimCount']} claims</span><span>{summary['errorCount']} errors</span><span>{summary['warningCount']} warnings</span></div></section>
 <label for="filter">Filter claims</label><input id="filter" type="search" placeholder="Target, field, value, or claim ID" autocomplete="off">
 <p class="empty" id="empty">No matching claims.</p><section class="grid" id="claims">{''.join(cards)}</section>
+<h2>Global checks</h2><section class="checks"><ul>{global_issue_html}</ul></section>
+<h2>Gaps</h2><section class="grid">{''.join(gap_cards) if gap_cards else "<p>No gaps</p>"}</section>
 <script type="application/json" id="review-data">{model_json}</script><script>
 const input=document.getElementById('filter');const cards=[...document.querySelectorAll('.claim')];const empty=document.getElementById('empty');
 input.addEventListener('input',()=>{{const q=input.value.trim().toLowerCase();let shown=0;for(const card of cards){{const yes=!q||card.dataset.search.includes(q);card.hidden=!yes;if(yes)shown++}}empty.style.display=shown?'none':'block'}});
@@ -481,6 +567,7 @@ def sample_project(example: str) -> tuple[dict[str, Any], dict[str, Any]]:
             "accessedAt": "2026-08-30",
             "applicablePeriod": "2027",
             "accessStatus": "accessed_body",
+            "supportsFields": [field],
         }],
         "claims": [{
             "id": "claim-application-window",

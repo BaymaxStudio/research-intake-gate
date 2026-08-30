@@ -54,6 +54,7 @@ A `current` claim needs at least one `supports` item whose source:
 - has `accessStatus: accessed_body`;
 - is not a `search_snippet`;
 - has `applicablePeriod` equal to the project's `currentPeriod` or `evergreen`.
+- declares the claim field in `supportsFields`.
 
 Search snippets can locate sources but cannot prove a current claim. A blocked page cannot prove that information does not exist. Contradictions remain visible until a human decides what to reject or follow up.
 

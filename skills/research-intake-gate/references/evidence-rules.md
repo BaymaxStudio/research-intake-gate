@@ -12,6 +12,8 @@
 
 A source can support a `current` claim only when `applicablePeriod` equals `project.currentPeriod` or is `evergreen`. Older material can remain as a `reference` claim but must not be relabeled as current.
 
+Each source also declares `supportsFields`. This is a semantic scope, not a list of words present on the page. For example, a general contact page can support `contact` but cannot by itself prove that a recruitment programme is open.
+
 ## Claim and evidence separation
 
 Every claim has a target, field, value, status, and evidence list. Evidence items point to source IDs and state one relation:
