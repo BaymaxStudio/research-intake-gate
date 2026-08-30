@@ -1,0 +1,29 @@
+{
+  "batchId": "admissions-2027-01",
+  "claims": [
+    {
+      "evidence": [{"excerpt": "Applications for the 2027 doctoral intake run from 1 October to 15 December 2026.", "locator": "application timeline", "relation": "supports", "sourceId": "source-official-2027"}],
+      "field": "application_window", "id": "claim-application-window", "status": "current", "targetId": "northbridge-university",
+      "value": {"closes": "2026-12-15", "opens": "2026-10-01"}
+    },
+    {
+      "evidence": [
+        {"excerpt": "The 2027 doctoral intake is open for applications.", "locator": "opening paragraph", "relation": "supports", "sourceId": "source-official-2027"},
+        {"excerpt": "The department has paused its 2027 doctoral intake pending programme review.", "locator": "department notice", "relation": "contradicts", "sourceId": "source-department-pause"}
+      ],
+      "field": "program_status", "id": "claim-program-status", "status": "current", "targetId": "northbridge-university", "value": "open"
+    }
+  ],
+  "createdAt": "2026-08-30T00:00:00Z",
+  "gaps": [
+    {"field": "contact", "id": "gap-contact-blocked", "note": "The programme contact page could not be accessed; no contact value was inferred.", "sourceIds": ["source-contact-blocked"], "targetId": "northbridge-university", "type": "blocked"},
+    {"field": "program_status", "id": "gap-archive-low-yield", "note": "The archive index exposed titles but no usable programme-level status evidence.", "sourceIds": ["source-archive-index"], "targetId": "northbridge-university", "type": "low_yield"}
+  ],
+  "schemaVersion": "0.1.0",
+  "sources": [
+    {"accessStatus": "accessed_body", "accessedAt": "2026-08-30", "applicablePeriod": "2027", "id": "source-official-2027", "publishedAt": "2026-08-20", "sourceType": "official_page", "supportsFields": ["application_window", "program_status"], "title": "2027 doctoral admissions notice", "url": "https://example.invalid/admissions/2027-notice"},
+    {"accessStatus": "accessed_body", "accessedAt": "2026-08-30", "applicablePeriod": "2027", "id": "source-department-pause", "publishedAt": "2026-08-27", "sourceType": "official_page", "supportsFields": ["program_status"], "title": "Department programme notice", "url": "https://example.invalid/admissions/department-notice"},
+    {"accessStatus": "blocked", "accessedAt": "2026-08-30", "applicablePeriod": "evergreen", "id": "source-contact-blocked", "publishedAt": null, "sourceType": "official_page", "supportsFields": ["contact"], "title": "Programme contact page", "url": "https://example.invalid/admissions/contact"},
+    {"accessStatus": "accessed_body", "accessedAt": "2026-08-30", "applicablePeriod": "evergreen", "id": "source-archive-index", "publishedAt": null, "sourceType": "official_page", "supportsFields": [], "title": "Admissions archive index", "url": "https://example.invalid/admissions/archive"}
+  ]
+}

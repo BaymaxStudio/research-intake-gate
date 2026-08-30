@@ -1,0 +1,184 @@
+{
+  "batchId": "recruitment-2027-01",
+  "claims": [
+    {
+      "evidence": [
+        {
+          "excerpt": "Applications for the 2026 teaching intake closed on 30 November 2025.",
+          "locator": "application timeline",
+          "relation": "supports",
+          "source": {
+            "accessStatus": "accessed_body",
+            "accessedAt": "2026-08-30",
+            "applicablePeriod": "2026",
+            "id": "source-official-2026",
+            "publishedAt": "2025-08-20",
+            "sourceType": "official_page",
+            "supportsFields": [
+              "application_window"
+            ],
+            "title": "2026 teaching recruitment notice",
+            "url": "https://example.invalid/recruitment/2026-notice"
+          },
+          "sourceId": "source-official-2026"
+        }
+      ],
+      "field": "application_window",
+      "id": "claim-window-stale",
+      "issues": [
+        {
+          "claim_id": "claim-window-stale",
+          "code": "CURRENT_SUPPORT",
+          "level": "error",
+          "message": "Current claim lacks accessed body evidence for the current period"
+        }
+      ],
+      "status": "current",
+      "targetId": "harbor-city-school",
+      "targetName": "Harbor City School",
+      "value": {
+        "closes": "2025-11-30"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "excerpt": "Harbor City School 2027 teacher recruitment is now open.",
+          "locator": "search result snippet",
+          "relation": "supports",
+          "source": {
+            "accessStatus": "snippet_only",
+            "accessedAt": "2026-08-30",
+            "applicablePeriod": "2027",
+            "id": "source-search-2027",
+            "publishedAt": null,
+            "sourceType": "search_snippet",
+            "supportsFields": [
+              "program_status"
+            ],
+            "title": "Search result for 2027 recruitment",
+            "url": "https://example.invalid/search-result"
+          },
+          "sourceId": "source-search-2027"
+        },
+        {
+          "excerpt": "For general enquiries, write to recruitment@example.org.",
+          "locator": "contact section",
+          "relation": "context",
+          "source": {
+            "accessStatus": "accessed_body",
+            "accessedAt": "2026-08-30",
+            "applicablePeriod": "evergreen",
+            "id": "source-contact",
+            "publishedAt": null,
+            "sourceType": "official_page",
+            "supportsFields": [
+              "contact"
+            ],
+            "title": "School contact page",
+            "url": "https://example.invalid/recruitment/contact"
+          },
+          "sourceId": "source-contact"
+        }
+      ],
+      "field": "program_status",
+      "id": "claim-status-snippet",
+      "issues": [
+        {
+          "claim_id": "claim-status-snippet",
+          "code": "CURRENT_SUPPORT",
+          "level": "error",
+          "message": "Current claim lacks accessed body evidence for the current period"
+        }
+      ],
+      "status": "current",
+      "targetId": "harbor-city-school",
+      "targetName": "Harbor City School",
+      "value": "open"
+    },
+    {
+      "evidence": [
+        {
+          "excerpt": "For general enquiries, write to recruitment@example.org.",
+          "locator": "contact section",
+          "relation": "supports",
+          "source": {
+            "accessStatus": "accessed_body",
+            "accessedAt": "2026-08-30",
+            "applicablePeriod": "evergreen",
+            "id": "source-contact",
+            "publishedAt": null,
+            "sourceType": "official_page",
+            "supportsFields": [
+              "contact"
+            ],
+            "title": "School contact page",
+            "url": "https://example.invalid/recruitment/contact"
+          },
+          "sourceId": "source-contact"
+        }
+      ],
+      "field": "contact",
+      "id": "claim-contact",
+      "issues": [],
+      "status": "current",
+      "targetId": "harbor-city-school",
+      "targetName": "Harbor City School",
+      "value": "recruitment@example.org"
+    }
+  ],
+  "currentPeriod": "2027",
+  "gaps": [
+    {
+      "field": "application_window",
+      "id": "gap-current-not-found",
+      "note": "No accessed 2027 notice body was available in this batch.",
+      "sourceIds": [
+        "source-search-2027"
+      ],
+      "sources": [
+        {
+          "accessStatus": "snippet_only",
+          "accessedAt": "2026-08-30",
+          "applicablePeriod": "2027",
+          "id": "source-search-2027",
+          "publishedAt": null,
+          "sourceType": "search_snippet",
+          "supportsFields": [
+            "program_status"
+          ],
+          "title": "Search result for 2027 recruitment",
+          "url": "https://example.invalid/search-result"
+        }
+      ],
+      "targetId": "harbor-city-school",
+      "type": "low_yield"
+    }
+  ],
+  "globalIssues": [
+    {
+      "code": "EMAIL_PRESENT",
+      "level": "warning",
+      "message": "Email-like value at $.batch.claims[1].evidence[1].excerpt"
+    },
+    {
+      "code": "EMAIL_PRESENT",
+      "level": "warning",
+      "message": "Email-like value at $.batch.claims[2].evidence[0].excerpt"
+    },
+    {
+      "code": "EMAIL_PRESENT",
+      "level": "warning",
+      "message": "Email-like value at $.batch.claims[2].value"
+    }
+  ],
+  "projectName": "Synthetic recruitment intake",
+  "schemaVersion": "0.1.0",
+  "summary": {
+    "claimCount": 3,
+    "errorCount": 2,
+    "gapCount": 1,
+    "sourceCount": 3,
+    "warningCount": 3
+  }
+}

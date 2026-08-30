@@ -1,0 +1,16 @@
+{
+  "allowedFields": [
+    "application_window",
+    "program_status",
+    "contact"
+  ],
+  "currentPeriod": "2027",
+  "name": "Synthetic admissions intake",
+  "schemaVersion": "0.1.0",
+  "targets": [
+    {
+      "id": "northbridge-university",
+      "name": "Northbridge University"
+    }
+  ]
+}

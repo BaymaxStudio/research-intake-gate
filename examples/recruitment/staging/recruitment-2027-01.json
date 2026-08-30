@@ -1,0 +1,28 @@
+{
+  "batchId": "recruitment-2027-01",
+  "claims": [
+    {
+      "evidence": [{"excerpt": "Applications for the 2026 teaching intake closed on 30 November 2025.", "locator": "application timeline", "relation": "supports", "sourceId": "source-official-2026"}],
+      "field": "application_window", "id": "claim-window-stale", "status": "current", "targetId": "harbor-city-school", "value": {"closes": "2025-11-30"}
+    },
+    {
+      "evidence": [
+        {"excerpt": "Harbor City School 2027 teacher recruitment is now open.", "locator": "search result snippet", "relation": "supports", "sourceId": "source-search-2027"},
+        {"excerpt": "For general enquiries, write to recruitment@example.org.", "locator": "contact section", "relation": "context", "sourceId": "source-contact"}
+      ],
+      "field": "program_status", "id": "claim-status-snippet", "status": "current", "targetId": "harbor-city-school", "value": "open"
+    },
+    {
+      "evidence": [{"excerpt": "For general enquiries, write to recruitment@example.org.", "locator": "contact section", "relation": "supports", "sourceId": "source-contact"}],
+      "field": "contact", "id": "claim-contact", "status": "current", "targetId": "harbor-city-school", "value": "recruitment@example.org"
+    }
+  ],
+  "createdAt": "2026-08-30T00:00:00Z",
+  "gaps": [{"field": "application_window", "id": "gap-current-not-found", "note": "No accessed 2027 notice body was available in this batch.", "sourceIds": ["source-search-2027"], "targetId": "harbor-city-school", "type": "low_yield"}],
+  "schemaVersion": "0.1.0",
+  "sources": [
+    {"accessStatus": "accessed_body", "accessedAt": "2026-08-30", "applicablePeriod": "2026", "id": "source-official-2026", "publishedAt": "2025-08-20", "sourceType": "official_page", "supportsFields": ["application_window"], "title": "2026 teaching recruitment notice", "url": "https://example.invalid/recruitment/2026-notice"},
+    {"accessStatus": "snippet_only", "accessedAt": "2026-08-30", "applicablePeriod": "2027", "id": "source-search-2027", "publishedAt": null, "sourceType": "search_snippet", "supportsFields": ["program_status"], "title": "Search result for 2027 recruitment", "url": "https://example.invalid/search-result"},
+    {"accessStatus": "accessed_body", "accessedAt": "2026-08-30", "applicablePeriod": "evergreen", "id": "source-contact", "publishedAt": null, "sourceType": "official_page", "supportsFields": ["contact"], "title": "School contact page", "url": "https://example.invalid/recruitment/contact"}
+  ]
+}

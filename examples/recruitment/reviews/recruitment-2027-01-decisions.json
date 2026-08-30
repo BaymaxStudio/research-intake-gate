@@ -1,0 +1,23 @@
+{
+  "batchId": "recruitment-2027-01",
+  "decisions": [
+    {
+      "claimId": "claim-window-stale",
+      "decision": "needs_followup",
+      "reason": ""
+    },
+    {
+      "claimId": "claim-status-snippet",
+      "decision": "needs_followup",
+      "reason": ""
+    },
+    {
+      "claimId": "claim-contact",
+      "decision": "needs_followup",
+      "reason": ""
+    }
+  ],
+  "reviewedAt": null,
+  "reviewer": "human-review-required",
+  "schemaVersion": "0.1.0"
+}

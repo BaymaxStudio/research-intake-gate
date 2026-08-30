@@ -1,0 +1,18 @@
+{
+  "batchId": "admissions-2027-01",
+  "decisions": [
+    {
+      "claimId": "claim-application-window",
+      "decision": "needs_followup",
+      "reason": ""
+    },
+    {
+      "claimId": "claim-program-status",
+      "decision": "needs_followup",
+      "reason": ""
+    }
+  ],
+  "reviewedAt": null,
+  "reviewer": "human-review-required",
+  "schemaVersion": "0.1.0"
+}

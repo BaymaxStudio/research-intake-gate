@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "0.1.0",
+  "cases": [
+    {
+      "id": "recruitment-evidence-misuse",
+      "shouldTrigger": true,
+      "prompt": "把这批学校招聘资料放进正式决策表之前，检查往届公告、搜索摘要和联系页有没有被误当作 2027 招聘证据。",
+      "expected": ["staging", "validate", "human review", "no automatic promotion"]
+    },
+    {
+      "id": "admissions-conflict-and-gaps",
+      "shouldTrigger": true,
+      "prompt": "审核这批博士招生资料，保留打不开的页面、低产出来源和互相冲突的官方信息，等我决定后再入库。",
+      "expected": ["blocked gap", "low_yield gap", "conflict", "needs_followup"]
+    },
+    {
+      "id": "one-off-fact-negative-trigger",
+      "shouldTrigger": false,
+      "prompt": "法国的首都是哪里？",
+      "expected": ["answer directly", "do not initialize a research project"]
+    }
+  ]
+}
