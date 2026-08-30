@@ -31,7 +31,10 @@ def run(*args: str) -> tuple[int, str]:
 
 
 def sanitize(text: str, project_dir: Path) -> str:
-    return text.replace(str(project_dir), "<demo-project>").replace(str(project_dir.resolve()), "<demo-project>")
+    variants = sorted({str(project_dir), str(project_dir.resolve())}, key=len, reverse=True)
+    for variant in variants:
+        text = text.replace(variant, "<demo-project>")
+    return text
 
 
 def wrap(text: str, width: int = 88) -> list[str]:

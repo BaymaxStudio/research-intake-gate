@@ -1,5 +1,5 @@
 $ research-gate init <demo-project> --example admissions
-Created research project: /private<demo-project>
+Created research project: <demo-project>
 exit=0
 
 $ research-gate validate <demo-project> --batch admissions-2027-01
@@ -7,7 +7,7 @@ PASS: no validation issues
 exit=0
 
 $ research-gate review <demo-project> --batch admissions-2027-01
-Wrote review dossier: /private<demo-project>/reviews/admissions-2027-01-review.html
+Wrote review dossier: <demo-project>/reviews/admissions-2027-01-review.html
 PASS: no validation issues
 exit=0
 
@@ -16,7 +16,7 @@ accept claim-application-window
 reason: current official notice matches the staged value
 
 $ research-gate promote <demo-project> --batch admissions-2027-01
-Promoted 1 accepted claim(s): /private<demo-project>/approved/admissions-2027-01.json
+Promoted 1 accepted claim(s): <demo-project>/approved/admissions-2027-01.json
 exit=0
 
 $ research-gate diff <demo-project> --from admissions-2027-01 --to admissions-2027-02
