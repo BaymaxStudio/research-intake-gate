@@ -1,0 +1,18 @@
+{
+  "name": "research-intake-gate",
+  "description": "Local evidence checks and human review for staged AI research.",
+  "owner": {
+    "name": "Baymax Studio"
+  },
+  "plugins": [
+    {
+      "name": "research-intake-gate",
+      "source": "./",
+      "description": "Validate staged AI research before human-approved promotion into traceable datasets.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Baymax Studio"
+      }
+    }
+  ]
+}

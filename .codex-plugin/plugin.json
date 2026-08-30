@@ -1,0 +1,29 @@
+{
+  "name": "research-intake-gate",
+  "version": "0.1.0",
+  "description": "Validate staged AI research before human-approved promotion into traceable datasets.",
+  "author": {
+    "name": "Baymax Studio",
+    "url": "https://github.com/BaymaxStudio"
+  },
+  "homepage": "https://github.com/BaymaxStudio/research-intake-gate",
+  "repository": "https://github.com/BaymaxStudio/research-intake-gate",
+  "license": "MIT",
+  "keywords": ["agent-skill", "research", "evidence", "human-review", "data-quality"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Research Intake Gate",
+    "shortDescription": "Audit AI research before formal import",
+    "longDescription": "A local, evidence-aware intake gate for staged research, deterministic checks, human review, and append-only approved datasets.",
+    "developerName": "Baymax Studio",
+    "category": "Productivity",
+    "capabilities": ["Local", "Read", "Write"],
+    "websiteURL": "https://github.com/BaymaxStudio/research-intake-gate",
+    "defaultPrompt": [
+      "Audit this staged research before I import it.",
+      "Prepare a review dossier for this research batch.",
+      "Compare two approved research batches."
+    ],
+    "brandColor": "#0B6B50"
+  }
+}
