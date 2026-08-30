@@ -1,0 +1,52 @@
+{
+  "acceptedClaims": [
+    {
+      "evidence": [
+        {
+          "excerpt": "Applications for the 2027 doctoral intake run from 1 October to 15 December 2026.",
+          "locator": "section: application timeline",
+          "relation": "supports",
+          "sourceId": "source-official-2027"
+        }
+      ],
+      "field": "application_window",
+      "id": "claim-application-window",
+      "status": "current",
+      "targetId": "northbridge-university",
+      "value": {
+        "closes": "2026-12-15",
+        "opens": "2026-10-01"
+      }
+    }
+  ],
+  "batchId": "admissions-2027-01",
+  "currentPeriod": "2027",
+  "projectName": "Synthetic admissions intake",
+  "review": {
+    "decisions": [
+      {
+        "claimId": "claim-application-window",
+        "decision": "accept",
+        "reason": "The current official notice and excerpt match the staged value."
+      }
+    ],
+    "reviewedAt": "2026-08-30T12:00:00Z",
+    "reviewer": "Synthetic human review"
+  },
+  "schemaVersion": "0.1.0",
+  "sources": [
+    {
+      "accessStatus": "accessed_body",
+      "accessedAt": "2026-08-30",
+      "applicablePeriod": "2027",
+      "id": "source-official-2027",
+      "publishedAt": "2026-08-20",
+      "sourceType": "official_page",
+      "supportsFields": [
+        "application_window"
+      ],
+      "title": "2027 doctoral admissions notice",
+      "url": "https://example.invalid/admissions/2027-notice"
+    }
+  ]
+}

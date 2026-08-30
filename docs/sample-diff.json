@@ -1,0 +1,55 @@
+{
+  "added": [],
+  "from": {
+    "id": "admissions-2027-01",
+    "kind": "approved"
+  },
+  "modified": [
+    {
+      "from": {
+        "evidence": [
+          {
+            "excerpt": "Applications for the 2027 doctoral intake run from 1 October to 15 December 2026.",
+            "locator": "section: application timeline",
+            "relation": "supports",
+            "sourceId": "source-official-2027"
+          }
+        ],
+        "field": "application_window",
+        "id": "claim-application-window",
+        "status": "current",
+        "targetId": "northbridge-university",
+        "value": {
+          "closes": "2026-12-15",
+          "opens": "2026-10-01"
+        }
+      },
+      "key": "northbridge-university::application_window",
+      "to": {
+        "evidence": [
+          {
+            "excerpt": "Applications for the 2027 doctoral intake run from 1 October to 15 December 2026.",
+            "locator": "section: application timeline",
+            "relation": "supports",
+            "sourceId": "source-official-2027"
+          }
+        ],
+        "field": "application_window",
+        "id": "claim-application-window",
+        "status": "current",
+        "targetId": "northbridge-university",
+        "value": {
+          "closes": "2026-12-20",
+          "opens": "2026-10-01"
+        }
+      }
+    }
+  ],
+  "removed": [],
+  "schemaVersion": "0.1.0",
+  "statusChanges": [],
+  "to": {
+    "id": "admissions-2027-02",
+    "kind": "staging"
+  }
+}
