@@ -32,6 +32,15 @@ Research Intake Gate keeps AI-collected claims in staging. A deterministic Pytho
 
 This is not a crawler or an automatic fact judge. The host agent handles research; this repository governs intake.
 
+## Architecture and verification / 架构与验证
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/research-intake-gate.dark.png">
+  <img src="docs/diagrams/research-intake-gate.light.png" alt="Research Intake Gate evidence review workflow">
+</picture>
+
+<sub>Component responsibilities, data boundaries, and inspectable verification paths. / 组件职责、数据边界与可检查的验证路径。</sub>
+
 ## Real artifacts
 
 | Artifact | Purpose | Sample |

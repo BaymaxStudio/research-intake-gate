@@ -33,6 +33,15 @@ Research Intake Gate 把 AI 研究放在暂存区。确定性脚本检查来源�
 
 它不负责通用网页抓取，也不判断事实真伪。网页访问由 Codex、Claude Code 或其他宿主 Agent 完成，这个仓库只负责研究进入正式数据之前的审核流程。
 
+## 架构与验证 / Architecture and verification
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/research-intake-gate.dark.png">
+  <img src="docs/diagrams/research-intake-gate.light.png" alt="Research Intake Gate 研究材料审核流程">
+</picture>
+
+<sub>组件职责、数据边界与可检查的验证路径。 / Component responsibilities, data boundaries, and inspectable verification paths.</sub>
+
 ## 实际产物
 
 | 产物 | 用途 | 样例 |
